@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>ADMIN - AUTO MARKET LAOS</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#0f172a;
+  color:white;
+}
+
+.container{
+  max-width:600px;
+  margin:auto;
+  padding:20px;
+}
+
+input,button{
+  width:100%;
+  padding:10px;
+  margin-top:8px;
+  border:none;
+  border-radius:8px;
+}
+
+button{
+  background:#22c55e;
+  color:white;
+  cursor:pointer;
+}
+
+.car{
+  background:#1e293b;
+  padding:10px;
+  margin-top:10px;
+  border-radius:10px;
+}
+
+.delete{
+  background:red;
+  margin-top:5px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>👑 ADMIN PANEL</h2>
+
+<!-- ❌ ลบ name ออกแล้ว -->
+<input id="brand" placeholder="แบรนด์">
+<input id="model" placeholder="รุ่น">
+<input id="year" placeholder="ปี">
+<input id="percent" placeholder="สภาพ %">
+<input id="location" placeholder="ที่อยู่">
+<input id="plate" placeholder="ทะเบียน">
+<input id="price" placeholder="ราคา">
+<input id="img" placeholder="ลิงก์รูป">
+
+<button onclick="addCar()">➕ โพสต์รถ</button>
+
+<div id="list"></div>
+
+</div>
+
+<script>
+
+let cars = JSON.parse(localStorage.getItem('cars')) || [];
+
+const user = localStorage.getItem('currentUser') || "admin";
+
+function addCar(){
+
+  const car = {
+    id: Date.now(),
+
+    brand: document.getElementById('brand').value,
+    model: document.getElementById('model').value,
+    year: document.getElementById('year').value,
+    percent: document.getElementById('percent').value,
+    location: document.getElementById('location').value,
+    plate: document.getElementById('plate').value,
+    price: document.getElementById('price').value,
+    img: document.getElementById('img').value,
+
+    owner: user
+  };
+
+  if(!car.brand || !car.model || !car.price || !car.img){
+    alert("กรอกข้อมูลไม่ครบ");
+    return;
+  }
+
+  cars.push(car);
+  localStorage.setItem('cars', JSON.stringify(cars));
+
+  render();
+}
+
+function render(){
+
+  let html = "";
+
+  cars.forEach(car => {
+
+    html += `
+      <div class="car">
+
+        <p>🏷 แบรนด์: ${car.brand || "-"}</p>
+        <p>🚗 รุ่น: ${car.model || "-"}</p>
+        <p>🚘 ทะเบียน: ${car.plate || "-"}</p>
+
+        <p>📅 ปี: ${car.year}</p>
+        <p>📊 สภาพ: ${car.percent}%</p>
+        <p>📍 ${car.location}</p>
+
+        <div>💰 ${car.price}</div>
+
+        <button class="delete" onclick="deleteCar(${car.id})">
+          🗑 ลบ
+        </button>
+
+      </div>
+    `;
+  });
+
+  document.getElementById("list").innerHTML = html;
+}
+
+function deleteCar(id){
+
+  cars = cars.filter(c => c.id !== id);
+
+  localStorage.setItem('cars', JSON.stringify(cars));
+
+  render();
+}
+
+render();
+
+</script>
+
+</body>
+</html>

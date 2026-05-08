@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile - AUTO MARKET LAOS</title>
+
+<style>
+
+body{
+  margin:0;
+  font-family:Arial;
+  background:#0f172a;
+  color:white;
+}
+
+.container{
+  max-width:500px;
+  margin:40px auto;
+  padding:20px;
+}
+
+.profile{
+  background:#1e293b;
+  padding:20px;
+  border-radius:15px;
+  text-align:center;
+}
+
+.avatar{
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  background:#38bdf8;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:35px;
+  margin:auto;
+}
+
+.name{
+  margin-top:10px;
+  font-size:22px;
+  color:#38bdf8;
+}
+
+button{
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:8px;
+  margin-top:10px;
+  cursor:pointer;
+  font-size:16px;
+}
+
+.sell{
+  background:#22c55e;
+  color:white;
+}
+
+.logout{
+  background:red;
+  color:white;
+}
+
+.form{
+  display:none;
+  margin-top:15px;
+  background:#1e293b;
+  padding:15px;
+  border-radius:12px;
+}
+
+input{
+  width:100%;
+  padding:10px;
+  margin-top:8px;
+  border:none;
+  border-radius:8px;
+}
+
+.car{
+  margin-top:15px;
+  background:#1e293b;
+  padding:10px;
+  border-radius:10px;
+}
+
+.car img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+  border-radius:10px;
+}
+
+.price{
+  color:#22c55e;
+  font-size:20px;
+  font-weight:bold;
+}
+
+.delete{
+  background:red;
+  color:white;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- PROFILE -->
+  <div class="profile">
+
+    <div class="avatar">👤</div>
+
+    <div class="name" id="user"></div>
+
+    <button class="sell" onclick="toggleForm()">
+      🚗 โพสขายรถ
+    </button>
+
+    <button class="logout" onclick="logout()">
+      🚪 Logout
+    </button>
+
+  </div>
+
+  <!-- FORM -->
+  <div class="form" id="form">
+
+    <input id="carbrand" placeholder="แบรนด์">
+    <input id="carName" placeholder="รุ่นรถ">
+    <input id="carYear" placeholder="ปีรถ">
+    <input id="carPercent" placeholder="สภาพรถ %">
+    <input id="carLocation" placeholder="ที่อยู่">
+    <input id="carDoc" placeholder="เอกสาร">
+    <input id="carPrice" placeholder="ราคา">
+
+    <!-- 🔥 MULTI IMAGE -->
+    <input type="file" id="carImage" accept="image/*" multiple>
+
+    <button class="sell" onclick="addCar()">
+      ➕ โพสต์ขายรถ
+    </button>
+
+  </div>
+
+  <!-- LIST -->
+  <div id="carList"></div>
+
+</div>
+
+<script>
+
+/* ================= LOGIN CHECK ================= */
+if(localStorage.getItem('isLoggedIn') !== 'true'){
+  window.location.href = "login.html";
+}
+
+/* ================= USER ================= */
+const currentUser = localStorage.getItem('currentUser');
+document.getElementById('user').innerText = currentUser;
+
+/* ================= DATA ================= */
+let cars = JSON.parse(localStorage.getItem('cars')) || [];
+
+/* ================= RENDER ================= */
+function render(){
+
+  let html = "";
+
+  const myCars = cars.filter(c => c.owner === currentUser);
+
+  myCars.forEach((car)=>{
+
+    let cover = Array.isArray(car.img) ? car.img[0] : car.img;
+
+    html += `
+      <div class="car">
+
+        <img src="${cover}">
+
+        <h2>${car.name}</h2>
+
+        <p>🏷 ${car.brand}</p>
+        <p>📅 ปี: ${car.year}</p>
+        <p>📊 สภาพ: ${car.percent}%</p>
+        <p>📍 ${car.location}</p>
+        <p>📄 ${car.doc}</p>
+
+        <div class="price">💰 $${car.price}</div>
+
+        <button class="delete" onclick="deleteCar(${car.id})">
+          🗑 ลบโพส
+        </button>
+
+      </div>
+    `;
+  });
+
+  document.getElementById('carList').innerHTML = html;
+}
+
+/* ================= ADD MULTI IMAGE ================= */
+function addCar(){
+
+  const files = document.getElementById('carImage').files;
+
+  if(files.length === 0){
+    alert("กรุณาเลือกรูป");
+    return;
+  }
+
+  let images = [];
+  let count = 0;
+
+  for(let i=0;i<files.length;i++){
+
+    const reader = new FileReader();
+
+    reader.onload = function(){
+
+      images.push(reader.result);
+      count++;
+
+      if(count === files.length){
+
+        const car = {
+          id: Date.now(),
+
+          brand: document.getElementById('carbrand').value,
+          name: document.getElementById('carName').value,
+          year: document.getElementById('carYear').value,
+          percent: document.getElementById('carPercent').value,
+          location: document.getElementById('carLocation').value,
+          doc: document.getElementById('carDoc').value,
+          price: document.getElementById('carPrice').value,
+
+          img: images, // ✅ หลายรูป
+
+          owner: currentUser
+        };
+
+        if(!car.name || !car.price){
+          alert("กรอกข้อมูลไม่ครบ");
+          return;
+        }
+
+        cars.push(car);
+        localStorage.setItem('cars', JSON.stringify(cars));
+
+        render();
+
+        alert("โพสสำเร็จ 🚗");
+      }
+    };
+
+    reader.readAsDataURL(files[i]);
+  }
+}
+
+/* ================= DELETE ================= */
+function deleteCar(id){
+
+  cars = cars.filter(c =>
+    !(c.id === id && c.owner === currentUser)
+  );
+
+  localStorage.setItem('cars', JSON.stringify(cars));
+
+  render();
+
+  alert("ลบโพสแล้ว");
+}
+
+/* ================= FORM ================= */
+function toggleForm(){
+  const form = document.getElementById('form');
+  form.style.display = form.style.display === "block" ? "none" : "block";
+}
+
+/* ================= LOGOUT ================= */
+function logout(){
+  localStorage.removeItem('isLoggedIn');
+  localStorage.removeItem('currentUser');
+  window.location.href = "login.html";
+}
+
+/* START */
+render();
+
+</script>
+
+</body>
+</html>

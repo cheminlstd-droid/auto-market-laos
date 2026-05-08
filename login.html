@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AUTO MARKET LAOS - Login</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins',sans-serif;
+}
+
+body{
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#0f172a,#111827,#1e293b);
+  overflow:hidden;
+}
+
+.background{
+  position:absolute;
+  width:100%;
+  height:100%;
+  background:url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1200&auto=format&fit=crop') center/cover;
+  opacity:0.18;
+  filter:blur(2px);
+}
+
+.login-container{
+  position:relative;
+  width:380px;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.15);
+  backdrop-filter:blur(12px);
+  border-radius:22px;
+  padding:35px;
+  color:white;
+  box-shadow:0 10px 40px rgba(0,0,0,0.4);
+  text-align:center;
+}
+
+.logo{
+  width:120px;
+  border-radius:18px;
+  margin-bottom:10px;
+}
+
+.logo-text{
+  font-size:24px;
+  font-weight:700;
+  color:#38bdf8;
+}
+
+.subtext{
+  font-size:14px;
+  color:#cbd5e1;
+  margin-bottom:20px;
+}
+
+.input-box{
+  margin-bottom:12px;
+  text-align:left;
+}
+
+.input-box label{
+  display:block;
+  margin-bottom:6px;
+  font-size:14px;
+  color:#e2e8f0;
+}
+
+.input-box input{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  background:rgba(255,255,255,0.12);
+  color:white;
+  outline:none;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  color:white;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.login-btn{
+  background:#38bdf8;
+  margin-top:8px;
+}
+
+.register-btn{
+  background:#22c55e;
+  margin-top:10px;
+}
+
+.switch{
+  margin-top:14px;
+  color:#cbd5e1;
+  cursor:pointer;
+  font-size:13px;
+}
+
+.register-box{
+  display:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="background"></div>
+
+<div class="login-container">
+
+  <img src="images.png" class="logo">
+
+  <div class="logo-text">
+    AUTO MARKET LAOS
+  </div>
+
+  <div class="subtext">
+    ຕະຫຼາດຂາຍລົດອັນດັບ 1 ໃນລາວ
+  </div>
+
+  <!-- LOGIN -->
+  <div id="loginBox">
+
+    <div class="input-box">
+      <label>ຊື່</label>
+
+      <input
+      type="text"
+      id="name"
+      placeholder="ຊື່ຂອງທ່ານ">
+    </div>
+
+    <div class="input-box">
+      <label>ລະຫັດຜ່ານ</label>
+
+      <input
+      type="password"
+      id="password"
+      placeholder="********">
+    </div>
+
+    <button
+    class="login-btn"
+    onclick="login()">
+      ເຂົ້າລະບົບ
+    </button>
+
+  </div>
+
+  <!-- REGISTER -->
+  <div id="registerBox"
+  class="register-box">
+
+    <div class="input-box">
+      <label>ຊື່</label>
+
+      <input
+      type="text"
+      id="rname"
+      placeholder="ຊື່ຂອງທ່ານ">
+    </div>
+
+    <div class="input-box">
+      <label>ເບີໂທ</label>
+
+      <input
+      type="text"
+      id="rphone"
+      placeholder="020XXXXXXXX">
+    </div>
+
+    <div class="input-box">
+      <label>ລະຫັດຜ່ານ</label>
+
+      <input
+      type="password"
+      id="rpassword"
+      placeholder="********">
+    </div>
+
+    <button
+    class="register-btn"
+    onclick="register()">
+      ສະໝັກສະມາຊິກ
+    </button>
+
+  </div>
+
+  <div class="switch"
+  onclick="toggleForm()">
+
+    ສະໝັກ / ເຂົ້າລະບົບ
+
+  </div>
+
+</div>
+
+<script>
+
+// 🔄 เปลี่ยนหน้า
+let isLogin = true;
+
+// 📦 โหลด users
+let users =
+JSON.parse(localStorage.getItem('users')) || [];
+
+// 🔁 switch form
+function toggleForm(){
+
+  isLogin = !isLogin;
+
+  document.getElementById('loginBox').style.display =
+  isLogin ? 'block' : 'none';
+
+  document.getElementById('registerBox').style.display =
+  isLogin ? 'none' : 'block';
+}
+
+// ✅ register
+function register(){
+
+  const rname =
+  document.getElementById('rname').value;
+
+  const rphone =
+  document.getElementById('rphone').value;
+
+  const rpassword =
+  document.getElementById('rpassword').value;
+
+  if(!rname || !rphone || !rpassword){
+
+    alert("ກະລຸນາກອກຂໍ້ມູນ");
+    return;
+  }
+
+  // 🔒 เช็คชื่อซ้ำ
+  const exists =
+  users.find(user => user.name === rname);
+
+  if(exists){
+
+    alert("ຊື່ນີ້ຖືກໃຊ້ແລ້ວ");
+    return;
+  }
+
+  // ➕ เพิ่ม user
+  users.push({
+
+    name:rname,
+    phone:rphone,
+    password:rpassword
+
+  });
+
+  // 💾 save
+  localStorage.setItem(
+    'users',
+    JSON.stringify(users)
+  );
+
+  alert("ສະໝັກສຳເລັດ");
+
+  toggleForm();
+}
+
+// 🔐 login
+function login(){
+
+  const name =
+  document.getElementById('name').value;
+
+  const password =
+  document.getElementById('password').value;
+
+  // 🔍 หา user
+  const user = users.find(
+    u =>
+    u.name === name &&
+    u.password === password
+  );
+
+  if(user){
+
+    localStorage.setItem(
+      'isLoggedIn',
+      'true'
+    );
+
+    localStorage.setItem(
+      'currentUser',
+      user.name
+    );
+
+    alert(
+      "ຍິນດີຕ້ອນຮັບ " + user.name
+    );
+
+    setTimeout(()=>{
+
+      window.location.href =
+      "index.html";
+
+    },500);
+
+  } else {
+
+    alert("ຊື່ ຫຼື ລະຫັດຜ່ານບໍ່ຖືກ");
+
+  }
+}
+
+</script>
+
+</body>
+</html>
